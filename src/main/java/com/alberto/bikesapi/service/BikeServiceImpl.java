@@ -27,7 +27,7 @@ public class BikeServiceImpl implements BikeService {
     @Override
     public Bike findBike(long id) throws BikeNotFoundException{
        return bikeRepository.findById(id)
-               .orElseThrow(()-> new BikeNotFoundException());
+               .orElseThrow(BikeNotFoundException::new);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class BikeServiceImpl implements BikeService {
     // primero busco el objeto que quiero borrar, paso el objeto al metodo delete y devuelvo el objeto borrado
     public Bike removeBike(long id) throws BikeNotFoundException{
         Bike bike = bikeRepository.findById(id)
-              .orElseThrow(()-> new BikeNotFoundException());
+              .orElseThrow(BikeNotFoundException::new);
         bikeRepository.delete(bike);
         return bike;
     }
@@ -55,7 +55,7 @@ public class BikeServiceImpl implements BikeService {
     //me hago con la bice, modifico la información y devuelvo y guardo la bici en el repositorio
         public Bike modifyBike(long id, Bike newBike) throws BikeNotFoundException{
         Bike bike = bikeRepository.findById(id)
-                .orElseThrow(()-> new BikeNotFoundException());
+                .orElseThrow(BikeNotFoundException::new);
         bike.setAvailable(newBike.isAvailable());
         bike.setBabyChair((newBike.isBabyChair()));
         bike.setBattery(newBike.getBattery());

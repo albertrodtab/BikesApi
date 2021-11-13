@@ -1,4 +1,4 @@
-package com.alberto.bikesapi.domain.repository;
+package com.alberto.bikesapi.repository;
 
 import com.alberto.bikesapi.domain.Bike;
 import org.springframework.data.repository.CrudRepository;
@@ -11,7 +11,6 @@ public interface BikeRepository extends CrudRepository<Bike, Long> {
 
 
     List<Bike> findAll();
-    Bike findById(long id);
     List<Bike> findByBabyChair(Boolean babyChair);
     List<Bike> findByBatteryGreaterThan(int battery);
     List<Bike> findByStationId(int StationId);

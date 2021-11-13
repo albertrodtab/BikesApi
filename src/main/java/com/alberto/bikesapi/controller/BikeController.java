@@ -1,8 +1,12 @@
-package com.alberto.bikesapi.domain.controller;
+package com.alberto.bikesapi.controller;
 
 import com.alberto.bikesapi.domain.Bike;
-import com.alberto.bikesapi.domain.service.BikeService;
+import com.alberto.bikesapi.exception.BikeNotFoundException;
+import com.alberto.bikesapi.exception.ErrorResponse;
+import com.alberto.bikesapi.service.BikeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,14 +34,14 @@ public class BikeController {
 
     @GetMapping("/bike/{id}")
     //PathVariable el parámetro forman parte de la propia URL
-    public Bike getBike(@PathVariable long id){
+    public Bike getBike(@PathVariable long id) throws BikeNotFoundException {
         Bike bike = bikeService.findBike(id);
         return bike;
     }
 
     //borrar una Bici y enseñar que bici se ha borrado
     @DeleteMapping("/bike/{id}")
-    public Bike removeBike(@PathVariable long id){
+    public Bike removeBike(@PathVariable long id) throws BikeNotFoundException {
         Bike bike = bikeService.removeBike(id);
         return bike;
     }
@@ -59,9 +63,25 @@ public class BikeController {
     //para modificar un solo atributo patch
     //Enviamos un parámetro como objeto y otro que forma parte de la propia dirección
     @PutMapping("/bike/{id}")
-    public Bike modifyBike(@RequestBody Bike bike, @PathVariable long id){
+    public Bike modifyBike(@RequestBody Bike bike, @PathVariable long id) throws BikeNotFoundException {
         Bike newBike = bikeService.modifyBike(id, bike);
         return newBike;
+    }
+
+    //creo también un método que capture la excepción y la devuelve un poco más elegante
+    @ExceptionHandler(BikeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBikeNotFoundException(BikeNotFoundException bnfe){
+        ErrorResponse errorResponse = new ErrorResponse("404", bnfe.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    //TODO mas tipos de excepciones que puedan gernerar errores.
+
+    //Esta excepción genérica me sirve para controlar culquier excepción que yo no haya pensado y controlado.
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException (Exception exception){
+        ErrorResponse errorResponse = new ErrorResponse("999", "Internal server error");
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

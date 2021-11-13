@@ -1,7 +1,8 @@
-package com.alberto.bikesapi.domain.service;
+package com.alberto.bikesapi.service;
 
 import com.alberto.bikesapi.domain.Bike;
-import com.alberto.bikesapi.domain.repository.BikeRepository;
+import com.alberto.bikesapi.exception.BikeNotFoundException;
+import com.alberto.bikesapi.repository.BikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,9 @@ public class BikeServiceImpl implements BikeService {
     }
 
     @Override
-    public Bike findBike(long id) {
-       return bikeRepository.findById(id);
+    public Bike findBike(long id) throws BikeNotFoundException{
+       return bikeRepository.findById(id)
+               .orElseThrow(()-> new BikeNotFoundException());
     }
 
     @Override
@@ -35,13 +37,10 @@ public class BikeServiceImpl implements BikeService {
 
     @Override
     // primero busco el objeto que quiero borrar, paso el objeto al metodo delete y devuelvo el objeto borrado
-    public Bike removeBike(long id) {
-        Bike bike = bikeRepository.findById(id);
-        if (bike == null){
-            System.out.println("No se ha encontrado esa bicicleta, no se puede borrar.");
-        }else {
-            bikeRepository.delete(bike);
-        }
+    public Bike removeBike(long id) throws BikeNotFoundException{
+        Bike bike = bikeRepository.findById(id)
+              .orElseThrow(()-> new BikeNotFoundException());
+        bikeRepository.delete(bike);
         return bike;
     }
 
@@ -54,8 +53,9 @@ public class BikeServiceImpl implements BikeService {
     @Override
     //este es un poco mas complicado
     //me hago con la bice, modifico la información y devuelvo y guardo la bici en el repositorio
-        public Bike modifyBike(long id, Bike newBike){
-        Bike bike = bikeRepository.findById(id);
+        public Bike modifyBike(long id, Bike newBike) throws BikeNotFoundException{
+        Bike bike = bikeRepository.findById(id)
+                .orElseThrow(()-> new BikeNotFoundException());
         bike.setAvailable(newBike.isAvailable());
         bike.setBabyChair((newBike.isBabyChair()));
         bike.setBattery(newBike.getBattery());
